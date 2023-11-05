@@ -16,13 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@WebServlet("/students")
+@WebServlet({"/students",""})
 @MultipartConfig(location = "/tmp")
 public class StudentServlet extends HttpServlet {
 
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        System.out.println("inside doget");
         BasicDataSource pool = (BasicDataSource) getServletContext().getAttribute("connectionPool");
 
         try(Connection connection = pool.getConnection()){
@@ -39,7 +41,8 @@ public class StudentServlet extends HttpServlet {
                 studentList.add(new Student(id, name, address, path));
             }
 
-            req.setAttribute("studentlist",studentList);
+            req.setAttribute("studentList",studentList);
+            System.out.println("setting the attribute");
             getServletContext().getRequestDispatcher("/WEB-INF/index.jsp").forward(req,resp);
         }catch (SQLException e){
             e.printStackTrace();
@@ -72,10 +75,8 @@ public class StudentServlet extends HttpServlet {
                     String uploadDirPath = getServletContext().getRealPath("/uploads");
                     UUID imageId = UUID.randomUUID();
                     String picturePath = uploadDirPath + imageId;
-
                     ResultSet generatedKeys = stmStudent.getGeneratedKeys();
                     generatedKeys.next();
-
                     PreparedStatement stmPicture = connection.prepareStatement("INSERT INTO picture (student_id,path) VALUES (?,?)");
                     stmPicture.setInt(1, generatedKeys.getInt(1));
                     stmPicture.setString(2, "uploads/" + imageId);
@@ -95,7 +96,7 @@ public class StudentServlet extends HttpServlet {
             }
 
         } catch (SQLException e) {
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeee");
+            
             throw new RuntimeException(e);
         }
         resp.sendRedirect("/app");
