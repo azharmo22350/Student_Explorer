@@ -4,14 +4,16 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 import java.io.File;
 import java.sql.SQLException;
 
+@WebListener
 public class AppContextListner implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-
+        System.out.println("inside contex initialize");
         String appPath = sce.getServletContext().getRealPath("/");
         new File(appPath,"uploads").mkdir();
 
@@ -23,7 +25,8 @@ public class AppContextListner implements ServletContextListener {
         pool.setInitialSize(5);
         pool.setMaxTotal(15);
 
-        sce.getServletContext().setAttribute("coonectioPool",pool);
+        sce.getServletContext().setAttribute("connectionPool",pool);
+        System.out.println("ending contex initialize");
 
     }
 
